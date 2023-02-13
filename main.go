@@ -5,13 +5,14 @@ import (
 	"os"
 
 	"github.com/chuakid/govtech-onecv-2023-technical-assessment/db"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	// Set up logger
 	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	log.SetOutput(file)
-
+	godotenv.Load()
 	if err != nil {
 		log.Fatalln("Error loading .env file")
 	}
@@ -21,4 +22,9 @@ func main() {
 
 	db.Connect(mysql_user, mysql_pass, db_url)
 	log.Println("DB connected")
+
+	// Create tables
+	db.SetupTables()
+	log.Println("Tables setup")
+
 }
