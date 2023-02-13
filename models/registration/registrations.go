@@ -1,4 +1,4 @@
-package models
+package registration
 
 import "github.com/chuakid/govtech-onecv-2023-technical-assessment/db"
 

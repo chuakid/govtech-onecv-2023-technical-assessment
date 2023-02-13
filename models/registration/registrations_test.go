@@ -1,4 +1,4 @@
-package models
+package registration
 
 import (
 	"database/sql"
@@ -15,6 +15,10 @@ func TestMain(m *testing.M) {
 	db.Connect("root", "password", "127.0.0.1:3306", "test_db")
 	setupTestTables(db.DB)
 	m.Run()
+	_, err := db.DB.Exec("DROP DATABASE test_db")
+	if err != nil {
+		log.Printf(err.Error())
+	}
 	db.DB.Close()
 }
 
@@ -57,25 +61,38 @@ func setupTestTables(db *sql.DB) {
 
 	// Set up teachers
 	_, err = db.Exec(`INSERT INTO teachers VALUES ("teacherken@gmail.com")`)
-	_, err = db.Exec(`INSERT INTO teachers VALUES ("teacherjoe@gmail.com")`)
+	if err != nil {
+		log.Fatalln("Error:", err.Error())
+	}
 
 	//Set up students
 	_, err = db.Exec(`INSERT INTO students VALUES ("studentjon@gmail.com", FALSE)`)
 	_, err = db.Exec(`INSERT INTO students VALUES ("studenthon@gmail.com", FALSE)`)
-	_, err = db.Exec(`INSERT INTO students VALUES ("commonstudent1@gmail.com", FALSE)`)
-	_, err = db.Exec(`INSERT INTO students VALUES ("commonstudent2@gmail.com", FALSE)`)
-	_, err = db.Exec(`INSERT INTO students VALUES ("student_only_under_teacher_ken@gmail.com", FALSE)`)
-	_, err = db.Exec(`INSERT INTO students VALUES ("studentagnes@gmail.com", FALSE)`)
-	_, err = db.Exec(`INSERT INTO students VALUES ("studentmiche@gmail.com", FALSE)`)
 	if err != nil {
 		log.Fatalln("Error:", err.Error())
 	}
-	// Set up registrations
-	_, err = db.Exec(`INSERT INTO registered VALUES ("student_only_under_teacher_ken@gmail.com", "teacherken@gmail.com")`)
-	_, err = db.Exec(`INSERT INTO registered VALUES ("commonstudent1@gmail.com", "teacherken@gmail.com")`)
-	_, err = db.Exec(`INSERT INTO registered VALUES ("commonstudent2@gmail.com", "teacherken@gmail.com")`)
-	_, err = db.Exec(`INSERT INTO registered VALUES ("commonstudent1@gmail.com", "teacherjoe@gmail.com")`)
-	_, err = db.Exec(`INSERT INTO registered VALUES ("commonstudent2@gmail.com", "teacherjoe@gmail.com")`)
 	db.Exec("SET FOREIGN_KEY_CHECKS = 1;")
 
+}
+
+func TestRegistration(t *testing.T) {
+	students := []string{"studentjon@gmail.com"}
+	err := RegisterStudentsToTeacher(students, "teacherken@gmail.com")
+	if err != nil {
+		t.Fatalf("Registration failed: %s", err.Error())
+	}
+}
+func TestRegistrationWithNonExistentTeacher(t *testing.T) {
+	students := []string{"studentjon@gmail.com"}
+	err := RegisterStudentsToTeacher(students, "no_exist@gmail.com")
+	if err == nil {
+		t.Fatalf("Registration should fail, foreign key constraints failing")
+	}
+}
+func TestRegistrationWithNonExistentStudent(t *testing.T) {
+	students := []string{"no-exist@gmail.com"}
+	err := RegisterStudentsToTeacher(students, "teacherken@gmail.com")
+	if err == nil {
+		t.Fatalf("Registration should fail, foreign key constraints failing")
+	}
 }

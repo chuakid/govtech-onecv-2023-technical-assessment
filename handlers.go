@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/chuakid/govtech-onecv-2023-technical-assessment/models"
+	"github.com/chuakid/govtech-onecv-2023-technical-assessment/models/registration"
+	"github.com/chuakid/govtech-onecv-2023-technical-assessment/models/student"
 )
 
 func registerStudents(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +28,7 @@ func registerStudents(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	err = models.RegisterStudentsToTeacher(studentsAndTeachers.Students, studentsAndTeachers.Teacher)
+	err = registration.RegisterStudentsToTeacher(studentsAndTeachers.Students, studentsAndTeachers.Teacher)
 	if err != nil {
 		w.WriteHeader(400)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -45,8 +46,8 @@ func suspendStudent(w http.ResponseWriter, r *http.Request) {
 	type DataFormat struct {
 		Student string
 	}
-	var student DataFormat
-	err := json.NewDecoder(r.Body).Decode(&student)
+	var studentToBeSuspended DataFormat
+	err := json.NewDecoder(r.Body).Decode(&studentToBeSuspended)
 
 	if err != nil {
 		w.WriteHeader(400)
@@ -55,7 +56,7 @@ func suspendStudent(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	err = models.SuspendStudent(student.Student)
+	err = student.SuspendStudent(studentToBeSuspended.Student)
 	if err != nil {
 		w.WriteHeader(400)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -80,7 +81,7 @@ func getCommonStudents(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	res, err := models.GetCommonStudents(teachers)
+	res, err := student.GetCommonStudents(teachers)
 	if err != nil {
 		w.WriteHeader(400)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -121,7 +122,7 @@ func getForNotifications(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mentioned := regex.FindAll([]byte(notificationAndTeacher.Notification), 0)
-	recipients, err := models.GetStudentsWhoCanReceiveNotifications(notificationAndTeacher.Teacher, mentioned)
+	recipients, err := student.GetStudentsWhoCanReceiveNotifications(notificationAndTeacher.Teacher, mentioned)
 	if err != nil {
 		log.Printf("Error getting students who can receive notifications %s", err)
 		w.WriteHeader(500)
