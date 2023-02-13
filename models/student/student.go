@@ -45,7 +45,12 @@ func GetStudentsWhoCanReceiveNotifications(teacher string, mentionedStudents [][
 	LEFT JOIN registered ON students.email = registered.student
 	WHERE
 	students.suspended = FALSE AND
-	(registered.teacher = ? OR students.email IN (?` + strings.Repeat(`,?`, len(mentionedStudents)-1) + `))`
+	(registered.teacher = ?`
+	if len(mentionedStudents) == 0 {
+		query += `)`
+	} else {
+		query += ` OR students.email IN (?` + strings.Repeat(`,?`, len(mentionedStudents)-1) + `))`
+	}
 
 	args := make([]any, len(mentionedStudents)+1)
 	args[0] = teacher

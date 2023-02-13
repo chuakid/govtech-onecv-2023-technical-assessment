@@ -99,6 +99,10 @@ func TestSuspendStudent(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Suspension fail, %s", err)
 	}
+	row := db.DB.QueryRow("SELECT * FROM students WHERE email = studentjon@gmail.com and suspended = TRUE")
+	if row.Scan() == sql.ErrNoRows {
+		t.Fatalf("Suspension fail, %s", err)
+	}
 }
 
 func TestGetCommonStudents(t *testing.T) {
@@ -144,5 +148,20 @@ func TestGetStudentsWhoCanReceiveNotifications(t *testing.T) {
 			studentagnes@gmail.com,
 		]`)
 	}
+}
 
+func TestGetStudentsWhoCanReceiveNotifications_noMentions(t *testing.T) {
+	students, err := GetStudentsWhoCanReceiveNotifications(
+		"teacherken@gmail.com",
+		[][]byte{})
+	if err != nil {
+		t.Fatalf("Get students for receiving notifcations fail, %s", err)
+	}
+	if len(students) != 3 {
+		t.Fatalf("Get students for receiving notifcations fail, students: %v, expected: %v", students, `[
+			commonstudent1@gmail.com,
+			commonstudent2@gmail.com,
+			student_only_under_teacher_ken@gmail.com@gmail.com,
+		]`)
+	}
 }
