@@ -7,20 +7,29 @@ import (
 	"testing"
 
 	"github.com/chuakid/govtech-onecv-2023-technical-assessment/db"
+	"github.com/joho/godotenv"
 )
 
 func TestMain(m *testing.M) {
 	file, _ := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	log.SetOutput(file)
 
+	err := godotenv.Load("../../.env")
+	if err != nil {
+		log.Fatalln("Error loading .env file: ", err.Error())
+	}
+	MYSQL_USER := os.Getenv("TEST_MYSQL_USER")
+	MYSQL_PASS := os.Getenv("TEST_MYSQL_PASS")
+	DB_URL := os.Getenv("TEST_MYSQL_URL")
+
 	const DB_NAME = "test_registrations_db"
-	db.Connect("root", "password", "127.0.0.1:3306", DB_NAME)
+	db.Connect(MYSQL_USER, MYSQL_PASS, DB_URL, DB_NAME)
 	setupTestTables(db.DB)
 
 	m.Run()
 
 	// clean up
-	_, err := db.DB.Exec("DROP DATABASE " + DB_NAME)
+	_, err = db.DB.Exec("DROP DATABASE " + DB_NAME)
 	if err != nil {
 		log.Printf(err.Error())
 	}
