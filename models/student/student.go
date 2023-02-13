@@ -12,6 +12,7 @@ func SuspendStudent(email string) (err error) {
 	return err
 }
 
+// Gets the students common to multiple teachers
 func GetCommonStudents(teachers []string) (students []string, err error) {
 	query := `SELECT student 
 	FROM registered
@@ -19,6 +20,8 @@ func GetCommonStudents(teachers []string) (students []string, err error) {
 		`) GROUP BY student 
 	HAVING count(teacher) = ?;`
 
+	// make arguments for query
+	// to do args...
 	args := make([]any, len(teachers)+1)
 	for i, teacher := range teachers {
 		args[i] = teacher
@@ -39,6 +42,13 @@ func GetCommonStudents(teachers []string) (students []string, err error) {
 	return students, err
 }
 
+// Gets students who can receive notifications. Such students are those that fufill the following criteria:
+//
+// 1. NOT SUSPENDED
+//
+// AND One of the following:
+//
+// - Registered under the teacher OR mentioned in the notification
 func GetStudentsWhoCanReceiveNotifications(teacher string, mentionedStudents [][]byte) (recipients []string, err error) {
 	query := `SELECT students.email 
 	FROM students
