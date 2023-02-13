@@ -10,7 +10,7 @@
 ## Setup
 1. `git clone` the repository
 2. `go get -u ./...` to get all dependencies
-3. `go run *.go` to spin up a development server
+3. `go run .` to spin up a development server
 
 `Gow` is recommended to watch the folder and rebuild on save 
 
