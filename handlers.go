@@ -8,6 +8,7 @@ import (
 
 	"github.com/chuakid/govtech-onecv-2023-technical-assessment/models/registration"
 	"github.com/chuakid/govtech-onecv-2023-technical-assessment/models/student"
+	"github.com/go-sql-driver/mysql"
 )
 
 func registerStudents(w http.ResponseWriter, r *http.Request) {
@@ -30,13 +31,25 @@ func registerStudents(w http.ResponseWriter, r *http.Request) {
 	}
 	err = registration.RegisterStudentsToTeacher(studentsAndTeachers.Students, studentsAndTeachers.Teacher)
 	if err != nil {
-		w.WriteHeader(400)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": "Either student or teacher not found",
-		})
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			if mysqlErr.Number == 1062 {
+				json.NewEncoder(w).Encode(map[string]interface{}{
+					"message": "Already registered",
+				})
+			} else {
+				w.WriteHeader(400)
+				json.NewEncoder(w).Encode(map[string]interface{}{
+					"message": "Either student or teacher not found",
+				})
+			}
+		} else {
+			w.WriteHeader(500)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"message": "Server error",
+			})
+		}
 		return
 	}
-
 	w.WriteHeader(204)
 }
 func suspendStudent(w http.ResponseWriter, r *http.Request) {

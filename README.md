@@ -3,6 +3,7 @@
 - Go (version >= 1.18)
 
 ## Environment variables
+Recommended to use a .env file.
 - PORT: The port the server will run on (defaults to 8000)
 - MYSQL_USER: username for MYSQL
 - MYSQL_PASS: password for MYSQL
@@ -10,7 +11,7 @@
 ## Setup
 1. `git clone` the repository
 2. `go get -u ./...` to get all dependencies
-3. `go run *.go` to spin up a development server
+3. `go run .` to spin up a development server
 
 `Gow` is recommended to watch the folder and rebuild on save 
 

@@ -12,10 +12,15 @@ import (
 func TestMain(m *testing.M) {
 	file, _ := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	log.SetOutput(file)
-	db.Connect("root", "password", "127.0.0.1:3306", "test_db")
+
+	const DB_NAME = "test_db_student"
+	db.Connect("root", "password", "127.0.0.1:3306", DB_NAME)
 	setupTestTables(db.DB)
+
 	m.Run()
-	_, err := db.DB.Exec("DROP DATABASE test_db")
+
+	// clean up
+	_, err := db.DB.Exec("DROP DATABASE " + DB_NAME)
 	if err != nil {
 		log.Printf(err.Error())
 	}
