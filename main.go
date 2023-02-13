@@ -34,6 +34,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/register", registerStudents)
+		r.Post("/suspend", suspendStudent)
 	})
 	http.ListenAndServe(":8000", r)
 
