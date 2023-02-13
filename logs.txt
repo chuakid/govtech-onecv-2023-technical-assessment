@@ -1,6 +1,0 @@
-2023/02/13 14:57:48 DB connected
-2023/02/13 14:57:49 DB connected
-2023/02/13 14:57:53 DB connected
-2023/02/13 14:58:12 DB connected
-2023/02/13 15:13:05 DB connected
-2023/02/13 15:13:32 DB connected
