@@ -19,13 +19,22 @@ func TestMain(m *testing.M) {
 }
 
 func TestRegistration(t *testing.T) {
-	err := RegisterStudentToTeacher("studentjon@gmail.com", "teacherken@gmail.com")
+	students := []string{"studentjon@gmail.com"}
+	err := RegisterStudentsToTeacher(students, "teacherken@gmail.com")
 	if err != nil {
 		t.Fatalf("Registration failed: %s", err.Error())
 	}
 }
-func TestRegistrationWithNonExistenceTeacher(t *testing.T) {
-	err := RegisterStudentToTeacher("studentjon@gmail.com", "no_exist@gmail.com")
+func TestRegistrationWithNonExistentTeacher(t *testing.T) {
+	students := []string{"studentjon@gmail.com"}
+	err := RegisterStudentsToTeacher(students, "no_exist@gmail.com")
+	if err == nil {
+		t.Fatalf("Registration should fail, foreign key constraints failing")
+	}
+}
+func TestRegistrationWithNonExistentStudent(t *testing.T) {
+	students := []string{"no-exist@gmail.com"}
+	err := RegisterStudentsToTeacher(students, "teacherken@gmail.com")
 	if err == nil {
 		t.Fatalf("Registration should fail, foreign key constraints failing")
 	}

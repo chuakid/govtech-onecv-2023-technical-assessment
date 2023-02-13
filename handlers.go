@@ -26,15 +26,14 @@ func registerStudents(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	for _, student := range studentsAndTeachers.Students {
-		err = models.RegisterStudentToTeacher(student, studentsAndTeachers.Teacher)
-		if err != nil {
-			w.WriteHeader(400)
-			json.NewEncoder(w).Encode(map[string]interface{}{
-				"message": "Either student or teacher not found",
-			})
-			return
-		}
+	err = models.RegisterStudentsToTeacher(studentsAndTeachers.Students, studentsAndTeachers.Teacher)
+	if err != nil {
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"message": "Either student or teacher not found",
+		})
+		return
 	}
+
 	w.WriteHeader(204)
 }

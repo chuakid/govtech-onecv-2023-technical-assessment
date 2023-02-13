@@ -33,7 +33,10 @@ func SetupTables() {
 		log.Fatalln("DB Error:", err)
 	}
 
-	_, err = DB.Exec(`CREATE TABLE IF NOT EXISTS students(email varchar(255) PRIMARY KEY);`)
+	_, err = DB.Exec(`CREATE TABLE IF NOT EXISTS students(
+		email varchar(255) PRIMARY KEY,
+		suspended BOOLEAN 
+	);`)
 	if err != nil {
 		log.Fatalln("DB Error:", err)
 	}
