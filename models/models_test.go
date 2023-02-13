@@ -65,6 +65,8 @@ func setupTestTables(db *sql.DB) {
 	_, err = db.Exec(`INSERT INTO students VALUES ("commonstudent1@gmail.com", FALSE)`)
 	_, err = db.Exec(`INSERT INTO students VALUES ("commonstudent2@gmail.com", FALSE)`)
 	_, err = db.Exec(`INSERT INTO students VALUES ("student_only_under_teacher_ken@gmail.com", FALSE)`)
+	_, err = db.Exec(`INSERT INTO students VALUES ("studentagnes@gmail.com", FALSE)`)
+	_, err = db.Exec(`INSERT INTO students VALUES ("studentmiche@gmail.com", FALSE)`)
 	if err != nil {
 		log.Fatalln("Error:", err.Error())
 	}

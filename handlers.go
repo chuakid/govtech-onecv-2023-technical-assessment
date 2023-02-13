@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"regexp"
 
 	"github.com/chuakid/govtech-onecv-2023-technical-assessment/models"
 )
@@ -91,5 +92,48 @@ func getCommonStudents(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"students": res,
 	})
+
+}
+
+func getForNotifications(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Get for notifications endpoint hit")
+	w.Header().Set("Content-Type", "application/json")
+
+	type DataFormat struct {
+		Teacher      string
+		Notification string
+	}
+	var notificationAndTeacher DataFormat
+	err := json.NewDecoder(r.Body).Decode(&notificationAndTeacher)
+
+	if err != nil {
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"message": "Formatting error",
+		})
+		return
+	}
+
+	regex, err := regexp.Compile(`\@\w*\@\w*\.\w*`)
+	if err != nil {
+		log.Printf(err.Error())
+		return
+	}
+
+	mentioned := regex.FindAll([]byte(notificationAndTeacher.Notification), 0)
+	recipients, err := models.GetStudentsWhoCanReceiveNotifications(notificationAndTeacher.Teacher, mentioned)
+	if err != nil {
+		log.Printf("Error getting students who can receive notifications %s", err)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"message": "Error retrieving dat",
+		})
+		return
+	}
+	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"recipients": recipients,
+	})
+	return
 
 }

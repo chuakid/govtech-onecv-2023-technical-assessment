@@ -19,7 +19,7 @@ func GetCommonStudents(teachers []string) (students []string, err error) {
 		`) GROUP BY student 
 	HAVING count(teacher) = ?;`
 
-	args := make([]interface{}, len(teachers)+1)
+	args := make([]any, len(teachers)+1)
 	for i, teacher := range teachers {
 		args[i] = teacher
 	}
@@ -37,4 +37,31 @@ func GetCommonStudents(teachers []string) (students []string, err error) {
 		students = append(students, next_student)
 	}
 	return students, err
+}
+
+func GetStudentsWhoCanReceiveNotifications(teacher string, mentionedStudents [][]byte) (recipients []string, err error) {
+	query := `SELECT students.email 
+	FROM students
+	LEFT JOIN registered ON students.email = registered.student
+	WHERE
+	students.suspended = FALSE AND
+	(registered.teacher = ? OR students.email IN (?` + strings.Repeat(`,?`, len(mentionedStudents)-1) + `))`
+
+	args := make([]any, len(mentionedStudents)+1)
+	args[0] = teacher
+	for i, student := range mentionedStudents {
+		args[i+1] = string(student)[1:]
+	}
+	var rows *sql.Rows
+	rows, err = db.DB.Query(query, args...)
+
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var next_student string
+		rows.Scan(&next_student)
+		recipients = append(recipients, next_student)
+	}
+	return recipients, nil
 }

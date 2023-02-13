@@ -36,3 +36,22 @@ func TestGetCommonStudentsWithTwoTeachers(t *testing.T) {
 		]`)
 	}
 }
+
+func TestGetStudentsWhoCanReceiveNotifications(t *testing.T) {
+	students, err := GetStudentsWhoCanReceiveNotifications(
+		"teacherken@gmail.com",
+		[][]byte{[]byte("@studentagnes@gmail.com"), []byte("@studentmiche@gmail.com")})
+	if err != nil {
+		t.Fatalf("Get students for receiving notifcations fail, %s", err)
+	}
+	if len(students) != 5 {
+		t.Fatalf("Get students for receiving notifcations fail, students: %v, expected: %v", students, `[
+			commonstudent1@gmail.com,
+			commonstudent2@gmail.com,
+			student_only_under_teacher_ken@gmail.com@gmail.com,
+			studentmiche@gmail.com,
+			studentagnes@gmail.com,
+		]`)
+	}
+
+}
