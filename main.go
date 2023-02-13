@@ -18,11 +18,15 @@ func main() {
 	if err != nil {
 		log.Fatalln("Error loading .env file")
 	}
-	mysql_user := os.Getenv("MYSQL_USER")
-	mysql_pass := os.Getenv("MYSQL_PASS")
-	db_url := os.Getenv("MYSQL_URL")
+	PORT := os.Getenv("PORT")
+	if PORT == "" {
+		PORT = "8000"
+	}
+	MYSQL_USER := os.Getenv("MYSQL_USER")
+	MYSQL_PASS := os.Getenv("MYSQL_PASS")
+	DB_URL := os.Getenv("MYSQL_URL")
 
-	db.Connect(mysql_user, mysql_pass, db_url, "technical_assessment")
+	db.Connect(MYSQL_USER, MYSQL_PASS, DB_URL, "technical_assessment")
 	log.Println("DB connected")
 	defer db.DB.Close()
 
@@ -38,6 +42,6 @@ func main() {
 		r.Post("/retrievefornotifications", getForNotifications)
 		r.Get("/commonstudents", getCommonStudents)
 	})
-	http.ListenAndServe(":8000", r)
-
+	log.Printf("Server up on %v", PORT)
+	http.ListenAndServe(":"+PORT, r)
 }
