@@ -68,7 +68,6 @@ func suspendStudent(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(204)
 }
-
 func getCommonStudents(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Get common students endpoint hit")
 	w.Header().Set("Content-Type", "application/json")
@@ -95,7 +94,6 @@ func getCommonStudents(w http.ResponseWriter, r *http.Request) {
 	})
 
 }
-
 func getForNotifications(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Get for notifications endpoint hit")
 	w.Header().Set("Content-Type", "application/json")
@@ -115,19 +113,19 @@ func getForNotifications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	regex, err := regexp.Compile(`\@\w*\@\w*\.\w*`)
+	regex, err := regexp.Compile(`@\w*@\w*\.\w*`)
 	if err != nil {
 		log.Printf(err.Error())
 		return
 	}
 
-	mentioned := regex.FindAll([]byte(notificationAndTeacher.Notification), 0)
+	mentioned := regex.FindAll([]byte(notificationAndTeacher.Notification), -1)
 	recipients, err := student.GetStudentsWhoCanReceiveNotifications(notificationAndTeacher.Teacher, mentioned)
 	if err != nil {
 		log.Printf("Error getting students who can receive notifications %s", err)
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": "Error retrieving dat",
+			"message": "Error retrieving data",
 		})
 		return
 	}
