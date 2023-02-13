@@ -66,3 +66,30 @@ func suspendStudent(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(204)
 }
+
+func getCommonStudents(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Get common students endpoint hit")
+	w.Header().Set("Content-Type", "application/json")
+
+	teachers := r.URL.Query()["teacher"]
+	if len(teachers) == 0 {
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"message": "No teachers in query",
+		})
+		return
+	}
+	res, err := models.GetCommonStudents(teachers)
+	if err != nil {
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"message": "Failed to get common students",
+		})
+		log.Printf(err.Error())
+		return
+	}
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"students": res,
+	})
+
+}

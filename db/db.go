@@ -45,7 +45,8 @@ func SetupTables() {
 		student VARCHAR(255),
 		teacher VARCHAR(255),
 		FOREIGN KEY (student) REFERENCES students(email),
-		FOREIGN KEY (teacher) REFERENCES teachers(email));`)
+		FOREIGN KEY (teacher) REFERENCES teachers(email),
+		CONSTRAINT PK PRIMARY KEY (student, teacher));`)
 	if err != nil {
 		log.Fatalln("DB Error:", err)
 	}

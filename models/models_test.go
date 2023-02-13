@@ -19,11 +19,20 @@ func TestMain(m *testing.M) {
 }
 
 func setupTestTables(db *sql.DB) {
-	db.Exec("DROP TABLE IF EXISTS teachers;")
-	db.Exec("DROP TABLE IF EXISTS students;")
-	db.Exec("DROP TABLE IF EXISTS registered;")
-
-	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS teachers(email varchar(255) PRIMARY KEY);`)
+	_, err := db.Exec("SET FOREIGN_KEY_CHECKS = 0;")
+	_, err = db.Exec("DROP TABLE IF EXISTS teachers;")
+	if err != nil {
+		log.Fatalln("db Error:", err)
+	}
+	_, err = db.Exec("DROP TABLE IF EXISTS students;")
+	if err != nil {
+		log.Fatalln("db Error:", err)
+	}
+	_, err = db.Exec("DROP TABLE IF EXISTS registered;")
+	if err != nil {
+		log.Fatalln("db Error:", err)
+	}
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS teachers(email varchar(255) PRIMARY KEY);`)
 	if err != nil {
 		log.Fatalln("db Error:", err)
 	}
@@ -40,7 +49,8 @@ func setupTestTables(db *sql.DB) {
 		student VARCHAR(255),
 		teacher VARCHAR(255),
 		FOREIGN KEY (student) REFERENCES students(email),
-		FOREIGN KEY (teacher) REFERENCES teachers(email));`)
+		FOREIGN KEY (teacher) REFERENCES teachers(email),
+		CONSTRAINT PK PRIMARY KEY (student, teacher));`)
 	if err != nil {
 		log.Fatalln("DB Error:", err)
 	}
@@ -55,8 +65,15 @@ func setupTestTables(db *sql.DB) {
 	_, err = db.Exec(`INSERT INTO students VALUES ("commonstudent1@gmail.com", FALSE)`)
 	_, err = db.Exec(`INSERT INTO students VALUES ("commonstudent2@gmail.com", FALSE)`)
 	_, err = db.Exec(`INSERT INTO students VALUES ("student_only_under_teacher_ken@gmail.com", FALSE)`)
-
+	if err != nil {
+		log.Fatalln("Error:", err.Error())
+	}
 	// Set up registrations
 	_, err = db.Exec(`INSERT INTO registered VALUES ("student_only_under_teacher_ken@gmail.com", "teacherken@gmail.com")`)
+	_, err = db.Exec(`INSERT INTO registered VALUES ("commonstudent1@gmail.com", "teacherken@gmail.com")`)
+	_, err = db.Exec(`INSERT INTO registered VALUES ("commonstudent2@gmail.com", "teacherken@gmail.com")`)
+	_, err = db.Exec(`INSERT INTO registered VALUES ("commonstudent1@gmail.com", "teacherjoe@gmail.com")`)
+	_, err = db.Exec(`INSERT INTO registered VALUES ("commonstudent2@gmail.com", "teacherjoe@gmail.com")`)
+	db.Exec("SET FOREIGN_KEY_CHECKS = 1;")
 
 }
