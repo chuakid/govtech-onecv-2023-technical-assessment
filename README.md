@@ -8,6 +8,12 @@ Recommended to use a .env file.
 - MYSQL_USER: username for MYSQL
 - MYSQL_PASS: password for MYSQL
 - MYSQL_URL: url and port for MYSQL E.G. 127.0.0.1:3306
+
+Test environment variables
+- TEST_MYSQL_USER
+- TEST_MYSQL_PASS
+- TEST_MYSQL_URL
+
 ## Setup
 1. `git clone` the repository
 2. `go get -u ./...` to get all dependencies
