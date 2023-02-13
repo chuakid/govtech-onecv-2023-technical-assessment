@@ -11,13 +11,13 @@ import (
 
 var DB *sql.DB
 
-func Connect(username string, password string, db_url string) {
+func Connect(username string, password string, db_url string, db_name string) {
 	connection_string := fmt.Sprintf("%s:%s@tcp(%s)/", username, password, db_url)
 	var err error
 	// create db
 	DB, err = sql.Open("mysql", connection_string)
-	_, err = DB.Exec("CREATE DATABASE IF NOT EXISTS technical_assessment")
-	_, err = DB.Exec("USE technical_assessment")
+	_, err = DB.Exec("CREATE DATABASE IF NOT EXISTS " + db_name)
+	_, err = DB.Exec("USE " + db_name)
 
 	if err != nil {
 		log.Fatalln("Failed to connect to db:", err)

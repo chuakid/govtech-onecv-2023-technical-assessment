@@ -2,9 +2,11 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/chuakid/govtech-onecv-2023-technical-assessment/db"
+	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
 )
 
@@ -20,11 +22,19 @@ func main() {
 	mysql_pass := os.Getenv("MYSQL_PASS")
 	db_url := os.Getenv("MYSQL_URL")
 
-	db.Connect(mysql_user, mysql_pass, db_url)
+	db.Connect(mysql_user, mysql_pass, db_url, "technical_assessment")
 	log.Println("DB connected")
+	defer db.DB.Close()
 
 	// Create tables
 	db.SetupTables()
 	log.Println("Tables setup")
+
+	// Router
+	r := chi.NewRouter()
+	r.Route("/api", func(r chi.Router) {
+		r.Post("/register", registerStudents)
+	})
+	http.ListenAndServe(":8000", r)
 
 }
