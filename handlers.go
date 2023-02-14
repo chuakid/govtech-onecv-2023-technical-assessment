@@ -33,6 +33,7 @@ func registerStudents(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
+				w.WriteHeader(400)
 				json.NewEncoder(w).Encode(map[string]interface{}{
 					"message": "Already registered",
 				})
